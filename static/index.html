@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Distributed Lock Visualization</title>
+  <script src="https://unpkg.com/htmx.org"></script>
+  <style>
+    circle {
+      transition: fill 0.3s;
+    }
+    .locked {
+      fill: green;
+    }
+    .waiting {
+      fill: red;
+    }
+    .idle {
+      fill: gray;
+    }
+  </style>
+</head>
+<body>
+  <h1>Distributed Lock Visualization</h1>
+  <svg width="800" height="400" id="visualization">
+    <circle id="Node1" cx="200" cy="200" r="50" class="idle" hx-get="/acquire?owner=Node1" hx-swap="none" hx-trigger="click"></circle>
+    <circle id="Node2" cx="400" cy="200" r="50" class="idle" hx-get="/acquire?owner=Node2" hx-swap="none" hx-trigger="click"></circle>
+    <circle id="Node3" cx="600" cy="200" r="50" class="idle" hx-get="/acquire?owner=Node3" hx-swap="none" hx-trigger="click"></circle>
+  </svg>
+  <button onclick="releaseLock('Node1')">Release Node1</button>
+  <button onclick="releaseLock('Node2')">Release Node2</button>
+  <button onclick="releaseLock('Node3')">Release Node3</button>
+
+  <script>
+    function releaseLock(nodeId) {
+      fetch(`/release?owner=${nodeId}`).then(() => {
+        document.getElementById(nodeId).classList.remove("locked", "waiting");
+        document.getElementById(nodeId).classList.add("idle");
+      });
+    }
+
+    document.querySelectorAll("circle").forEach(circle => {
+      circle.addEventListener("htmx:afterOnLoad", (event) => {
+        const nodeId = event.target.id;
+        if (event.detail.xhr.responseText === "Lock acquired") {
+          event.target.classList.remove("idle", "waiting");
+          event.target.classList.add("locked");
+        } else {
+          event.target.classList.remove("idle");
+          event.target.classList.add("waiting");
+        }
+      });
+    });
+  </script>
+</body>
+</html>

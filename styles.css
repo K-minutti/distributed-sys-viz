@@ -5,3 +5,25 @@ body {
     text-align: center;
   }
   
+.node {
+  stroke: grey;
+  stroke-width: 1px;
+  cursor: pointer;
+}
+
+.node.idle {
+  fill: #e8edfc;
+
+}
+
+.node.requesting {
+  fill: orange;
+}
+
+.node.locked {
+  fill: green;
+}
+
+.node.failed {
+  fill: red;
+}

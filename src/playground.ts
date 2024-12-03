@@ -50,6 +50,7 @@ class LockState {
   }
 }
 
+
 // Coordinates the nodes, locks, and viz
 class Simulation {
   lock = new LockState();
@@ -84,6 +85,27 @@ class Simulation {
       .attr("text-anchor", "middle")
       .attr("font-size", "12px")
       .text(id);
+  }
+
+  addConnection(sourceId: string, targetId: string) {
+    const sourceNode = this.nodes.find(node => node.id === sourceId);
+    const targetNode = this.nodes.find(node => node.id === targetId);
+  
+    if (!sourceNode || !targetNode) {
+      console.error("Invalid source or target node for connection");
+      return;
+    }
+  
+    // Add a line to represent the connection
+    this.canvas
+      .append("line")
+      .attr("x1", sourceNode.x)
+      .attr("y1", sourceNode.y)
+      .attr("x2", targetNode.x)
+      .attr("y2", targetNode.y)
+      .attr("stroke", "black")
+      .attr("stroke-width", 2)
+      .attr("id", `connection-${sourceId}-${targetId}`);
   }
 
   handleNodeClick(node: Node) {
